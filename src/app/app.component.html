@@ -1,45 +1,68 @@
 <!-- app.component.html -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-    <div class="container">
-      <a class="navbar-brand" routerLink="/">
-        <i class="bi bi-box-seam me-2"></i>{{ title | custom }}
-      </a>
-      <button class="navbar-toggler" 
-              type="button" 
-              data-bs-toggle="collapse" 
-              data-bs-target="#navbarNav" 
-              aria-controls="navbarNav" 
-              aria-expanded="false" 
-              aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-              <i class="bi bi-house-door me-1"></i> หน้าแรก
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/products" routerLinkActive="active">
-              <i class="bi bi-box-seam me-1"></i> จัดการสินค้า
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/about" routerLinkActive="active">
-              <i class="bi bi-info-circle me-1"></i> เกี่ยวกับเรา
-            </a>
-          </li>
-        </ul>
-        <div class="navbar-nav" *ngIf="authService.isAuthenticated$ | async">
-          <button class="btn btn-outline-light" (click)="logout()">
-            <i class="bi bi-box-arrow-right me-2"></i>ออกจากระบบ
-          </button>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" *ngIf="authService.isLoggedIn()">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/home">
+      <i class="bi bi-box-seam me-2"></i>{{ title | custom }}
+    </a>
+    <button class="navbar-toggler" 
+            type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav" 
+            aria-controls="navbarNav" 
+            aria-expanded="false" 
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <i class="bi bi-house-door me-1"></i> หน้าแรก
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products" routerLinkActive="active">
+            <i class="bi bi-box-seam me-1"></i> จัดการสินค้า
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">
+            <i class="bi bi-info-circle me-1"></i> เกี่ยวกับเรา
+          </a>
+        </li>
+      </ul>
+      <div class="navbar-nav">
+        <button class="btn btn-outline-light" (click)="openLogoutModal()">
+          <i class="bi bi-box-arrow-right me-2"></i>ออกจากระบบ
+        </button>
       </div>
     </div>
-  </nav>
-  
-  <main class="container py-5 mt-4">
-    <router-outlet></router-outlet>
-  </main>
+  </div>
+</nav>
+
+<main class="container py-5 mt-4" *ngIf="authService.isLoggedIn()">
+  <router-outlet></router-outlet>
+</main>
+
+<div *ngIf="!authService.isLoggedIn()">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">ยืนยันการออกจากระบบ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeLogoutModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="confirmLogout()">ออกจากระบบ</button>
+      </div>
+    </div>
+  </div>
+</div>

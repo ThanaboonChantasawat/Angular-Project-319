@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import * as bootstrap from 'bootstrap';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CustomPipe } from './custom.pipe';
@@ -19,6 +20,27 @@ export class AppComponent {
     public authService: AuthService,
     private router: Router
   ) {}
+
+  openLogoutModal() {
+    const modalElement = document.getElementById('logoutModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  closeLogoutModal() {
+    const modalElement = document.getElementById('logoutModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      modal?.hide();
+    }
+  }
+
+  confirmLogout() {
+    this.closeLogoutModal();
+    this.logout();
+  }
 
   logout() {
     this.authService.logout();

@@ -1,9 +1,92 @@
-<div class="jumbotron text-center">
-    <h1 class="display-4">ยินดีต้อนรับ</h1>
-    <p class="lead">ระบบจัดการสินค้าออนไลน์</p>
-    <hr class="my-4">
-    <p>เริ่มต้นใช้งานระบบได้ที่เมนู "จัดการสินค้า"</p>
-    <a class="btn btn-primary btn-lg" routerLink="/products" role="button">
-      <i class="bi bi-box-seam"></i> เริ่มต้นใช้งาน
+<!-- home.component.html -->
+<div class="container py-5">
+  <!-- Hero Section -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold mb-3">ระบบจัดการสินค้า</h1>
+    <p class="lead mb-4">
+      ระบบจัดการสินค้าออนไลน์ที่ช่วยให้คุณบริหารจัดการสินค้าได้อย่างมีประสิทธิภาพ
+    </p>
+    <a class="btn btn-primary btn-lg" routerLink="/products">
+      <i class="bi bi-box-seam me-2"></i>เริ่มต้นใช้งาน
     </a>
   </div>
+
+  <!-- Features Section -->
+  <h2 class="text-center mb-4">ฟีเจอร์หลัก</h2>
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+          <div class="feature-icon bg-primary bg-gradient text-white mb-3">
+            <i class="bi bi-plus-circle display-6"></i>
+          </div>
+          <h4>จัดการสินค้า</h4>
+          <p>เพิ่ม ลบ แก้ไขข้อมูลสินค้าได้อย่างง่ายดาย</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+          <div class="feature-icon bg-success bg-gradient text-white mb-3">
+            <i class="bi bi-graph-up display-6"></i>
+          </div>
+          <h4>ติดตามสถานะ</h4>
+          <p>ดูสถานะสินค้าคงเหลือและการแจ้งเตือนสินค้าใกล้หมด</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+          <div class="feature-icon bg-info bg-gradient text-white mb-3">
+            <i class="bi bi-search display-6"></i>
+          </div>
+          <h4>ค้นหาและกรอง</h4>
+          <p>ค้นหาและกรองข้อมูลสินค้าได้อย่างรวดเร็ว</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Start Guide -->
+  <div class="card border-0 shadow-sm mb-5">
+    <div class="card-body p-4">
+      <h3 class="card-title mb-4">วิธีการใช้งานเบื้องต้น</h3>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="d-flex mb-4">
+            <div class="step-number">1</div>
+            <div>
+              <h5>เพิ่มสินค้าใหม่</h5>
+              <p>กรอกข้อมูลสินค้าในฟอร์มและกดปุ่ม "เพิ่มสินค้า"</p>
+            </div>
+          </div>
+          <div class="d-flex mb-4">
+            <div class="step-number">2</div>
+            <div>
+              <h5>จัดการจำนวนสินค้า</h5>
+              <p>ใช้ปุ่ม + และ - เพื่อปรับจำนวนสินค้า</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="d-flex mb-4">
+            <div class="step-number">3</div>
+            <div>
+              <h5>แก้ไขข้อมูล</h5>
+              <p>คลิกที่ปุ่มแก้ไขเพื่อปรับปรุงข้อมูลสินค้า</p>
+            </div>
+          </div>
+          <div class="d-flex mb-4">
+            <div class="step-number">4</div>
+            <div>
+              <h5>ติดตามสถานะ</h5>
+              <p>ดูการแจ้งเตือนสินค้าใกล้หมดและสถิติต่างๆ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
