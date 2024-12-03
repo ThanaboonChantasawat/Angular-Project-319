@@ -1,0 +1,78 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.btn-group .btn {
+  padding: 0.4rem 0.6rem;
+  margin: 0 2px;
+  transition: all 0.2s ease;
+}
+
+.btn-group .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.btn-group .btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn[disabled]:hover::after {
+  content: "ไม่สามารถลดจำนวนได้อีก";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+.alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1050;
+  min-width: 250px;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: #0d6efd;
+  opacity: .65;
+}
+
+@media (max-width: 768px) {
+  .btn-group {
+    display: flex;
+    gap: 0.25rem;
+  }
+  
+  .btn-group .btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+}
