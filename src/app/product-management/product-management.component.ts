@@ -1,5 +1,5 @@
 // src/app/product-management/product-management.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -32,7 +32,7 @@ export interface Product {
   templateUrl: './product-management.component.html',
   styleUrls: ['./product-management.component.css']
 })
-export class ProductManagementComponent implements OnInit {
+export class ProductManagementComponent implements OnInit, OnDestroy {
   productForm: FormGroup;
   products: Product[] = [];
   showSuccessAlert = false;
@@ -42,7 +42,7 @@ export class ProductManagementComponent implements OnInit {
   searchTerm: string = '';
   selectedCategory: string = '';
   categories: string[] = [];
-  chartInstance: any;
+  chartInstance: Chart | null = null; // Update type definition
   sortOption: string = 'name';
   sortDirection: 'asc' | 'desc' = 'asc';
   sortField: string = 'name';
@@ -63,6 +63,12 @@ export class ProductManagementComponent implements OnInit {
     this.loadProducts();
   }
 
+  ngOnDestroy() {
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
+  }
+
   loadProducts() {
     this.productService.getProducts().subscribe({
       next: (products) => {
@@ -76,19 +82,23 @@ export class ProductManagementComponent implements OnInit {
 
   addProduct() {
     if (this.productForm.valid) {
-      const newProduct = this.productForm.value;
-      this.productService.addProduct(newProduct).subscribe({
-        next: (product) => {
-          this.products.push(product);
+      const product: Product = {
+        name: this.productForm.value.name,
+        category: this.productForm.value.category,
+        quantity: this.productForm.value.quantity
+      };
+
+      this.productService.addProduct(product).subscribe({
+        next: (newProduct) => {
+          this.products.push(newProduct);
+          this.productForm.reset();
           this.showAlert('เพิ่มสินค้าสำเร็จ');
-          this.productForm.reset({quantity: 1});
           this.updateCategories();
           this.initChart();
-          this.erpIntegrationService.syncProductData(product).subscribe();
         },
         error: (error) => {
           console.error('Error adding product:', error);
-          this.showAlert('เกิดข้อผิดพลาดในการเพิ่มสินค้า', 'danger');
+          this.showAlert('เกิดข้อผิดพลาด: ' + error.message);
         }
       });
     }
@@ -100,7 +110,7 @@ export class ProductManagementComponent implements OnInit {
       this.productService.updateProduct(product._id!, this.productForm.value).subscribe({
         next: (updatedProduct) => {
           this.products[this.editIndex!] = updatedProduct;
-          this.showAlert('แก้ไขสินค้าส���เร็จ');
+          this.showAlert('แก้ไขสินค้าสำเร็จ');
           this.closeEditModal();
           this.editIndex = null;
           this.updateCategories();
@@ -128,15 +138,23 @@ export class ProductManagementComponent implements OnInit {
 
   updateQuantity(index: number, value: number) {
     const product = this.products[index];
-    product.quantity += value;
-    this.productService.updateProduct(product._id!, product).subscribe({
-      next: (updatedProduct) => {
-        this.products[index] = updatedProduct;
+    if (!product._id) return;
+
+    const updatedProduct = {
+      ...product,
+      quantity: product.quantity + value
+    };
+
+    this.productService.updateProduct(product._id, updatedProduct).subscribe({
+      next: (response) => {
+        this.products[index] = response;
         this.updateCategories();
         this.initChart();
-        this.erpIntegrationService.syncProductData(updatedProduct).subscribe();
       },
-      error: (error) => console.error('Error updating quantity:', error)
+      error: (error) => {
+        console.error('Error updating quantity:', error);
+        this.showAlert('เกิดข้อผิดพลาดในการอัพเดทจำนวนสินค้า');
+      }
     });
   }
 
@@ -208,7 +226,14 @@ export class ProductManagementComponent implements OnInit {
   }
 
   initChart() {
+    // Destroy existing chart if it exists
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
+
     const ctx = document.getElementById('productChart') as HTMLCanvasElement;
+    if (!ctx) return;
+
     this.chartInstance = new Chart(ctx, {
       type: 'bar',
       data: {
