@@ -216,212 +216,210 @@
       </div>
     </div>
   </div>
+<!-- Products Table -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" *ngIf="products.length > 0">
+        <thead class="table-light">
+          <tr>
+            <th>ชื่อสินค้า</th>
+            <th>ประเภทสินค้า</th>
+            <th>จำนวน</th>
+            <th>การจัดการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of products; let i = index"
+              [class.table-warning]="product.quantity <= 5 && product.quantity > 0"
+              [class.table-danger]="product.quantity === 0">
+            <td>{{ product.name | custom }}</td>
+            <td>{{ product.category | custom }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-success btn-sm"
+                        (click)="updateQuantity(i, 1)"
+                        title="เพิ่มจำนวน">
+                  <i class="bi bi-plus-lg"></i>
+                </button>
+                <button class="btn btn-warning btn-sm"
+                        (click)="updateQuantity(i, -1)"
+                        [disabled]="product.quantity <= 0"
+                        title="ลดจำนวน">
+                  <i class="bi bi-dash-lg"></i>
+                </button>
+                <button class="btn btn-primary btn-sm"
+                        (click)="editProduct(i)"
+                        title="แก้ไขสินค้า">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-danger btn-sm"
+                        (click)="confirmDelete(i)"
+                        title="ลบสินค้า">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="products.length === 0" class="text-center text-muted py-5">
+        <i class="bi bi-inbox display-1"></i>
+        <p class="mt-3">ยังไม่มีสินค้าในระบบ</p>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- Summary -->
+<div class="alert alert-info mt-4" *ngIf="products.length > 0">
+  <div class="d-flex justify-content-between align-items-center">
+    <span>จำนวนสินค้าทั้งหมด: {{ products.length }} รายการ</span>
+    <span>จำนวนคงเหลือทั้งหมด: {{ getTotalQuantity() }} ชิ้น</span>
+  </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div
+  class="modal fade"
+  id="editProductModal"
+  tabindex="-1"
+  aria-labelledby="editProductModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProductModalLabel">
+          <i class="bi bi-pencil-square me-2"></i>แก้ไขสินค้า
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="closeEditModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="productForm">
+          <div class="mb-3">
+            <label for="editName" class="form-label">ชื่อสินค้า</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editName"
+              formControlName="name"
+            />
+            <div
+              class="invalid-feedback"
+              [class.d-block]="hasError('name', 'required')"
+            >
+              กรุณากรอกชื่อสินค้า
+            </div>
+            <div
+              class="invalid-feedback"
+              [class.d-block]="hasError('name', 'minlength')"
+            >
+              ชื่อสินค้าต้องมีอย่างน้อย 2 ตัวอักษร
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="editCategory" class="form-label">ประเภทสินค้า</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editCategory"
+              formControlName="category"
+            />
+            <div
+              class="invalid-feedback"
+              [class.d-block]="hasError('category', 'required')"
+            >
+              กรุณากรอกประเภทสินค้า
+            </div>
+            <div
+              class="invalid-feedback"
+              [class.d-block]="hasError('category', 'minlength')"
+            >
+              ประเภทสินค้าต้องมีอย่างน้อย 2 ตัวอักษร
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="editQuantity" class="form-label">จำนวนสินค้า</label>
+            <div class="input-group">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="
+                  productForm.patchValue({
+                    quantity: (productForm.get('quantity')?.value || 0) - 1
+                  })
+                "
+                [disabled]="(productForm.get('quantity')?.value || 0) <= 1"
+              >
+                <i class="bi bi-dash"></i>
+              </button>
+              <input
+                type="number"
+                class="form-control text-center"
+                id="editQuantity"
+                formControlName="quantity"
+                min="1"
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="
+                  productForm.patchValue({
+                    quantity: (productForm.get('quantity')?.value || 0) + 1
+                  })
+                "
+              >
+                <i class="bi bi-plus"></i>
+              </button>
+            </div>
+            <div
+              class="invalid-feedback"
+              [class.d-block]="hasError('quantity', 'required')"
+            >
+              กรุณากรอกจำนวนสินค้า
+            </div>
+            <div
+              class="invalid-feedback"
+              [class.d-block]="hasError('quantity', 'min')"
+            >
+              จำนวนสินค้าต้องมากกว่า 0
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="closeEditModal()"
+        >
+          <i class="bi bi-x-circle me-2"></i>ยกเลิก
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveEdit()"
+          [disabled]="productForm.invalid"
+        >
+          <i class="bi bi-check-circle me-2"></i>บันทึกการแก้ไข
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
   <!-- Chart -->
   <div class="card shadow-sm mb-4">
     <div class="card-body">
       <canvas id="productChart"></canvas>
-    </div>
-  </div>
-
-  <!-- Products Table -->
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0" *ngIf="products.length > 0">
-          <thead class="table-light">
-            <tr>
-              <th>ชื่อสินค้า</th>
-              <th>ประเภทสินค้า</th>
-              <th>จำนวน</th>
-              <th>การจัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let product of products; let i = index"
-                [class.table-warning]="product.quantity <= 5 && product.quantity > 0"
-                [class.table-danger]="product.quantity === 0">
-              <td>{{ product.name | custom }}</td>
-              <td>{{ product.category | custom }}</td>
-              <td>{{ product.quantity }}</td>
-              <td>
-                <div class="btn-group">
-                  <button class="btn btn-success btn-sm"
-                          (click)="updateQuantity(i, 1)"
-                          title="เพิ่มจำนวน">
-                    <i class="bi bi-plus-lg"></i>
-                  </button>
-                  <button class="btn btn-warning btn-sm"
-                          (click)="updateQuantity(i, -1)"
-                          [disabled]="product.quantity <= 0"
-                          title="ลดจำนวน">
-                    <i class="bi bi-dash-lg"></i>
-                  </button>
-                  <button class="btn btn-primary btn-sm"
-                          (click)="editProduct(i)"
-                          title="แก้ไขสินค้า">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn btn-danger btn-sm"
-                          (click)="confirmDelete(i)"
-                          title="ลบสินค้า">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div *ngIf="products.length === 0" class="text-center text-muted py-5">
-          <i class="bi bi-inbox display-1"></i>
-          <p class="mt-3">ยังไม่มีสินค้าในระบบ</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Summary -->
-  <div class="alert alert-info mt-4" *ngIf="products.length > 0">
-    <div class="d-flex justify-content-between align-items-center">
-      <span>จำนวนสินค้าทั้งหมด: {{ products.length }} รายการ</span>
-      <span>จำนวนคงเหลือทั้งหมด: {{ getTotalQuantity() }} ชิ้น</span>
-    </div>
-  </div>
-
-  <!-- Edit Product Modal -->
-  <div
-    class="modal fade"
-    id="editProductModal"
-    tabindex="-1"
-    aria-labelledby="editProductModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editProductModalLabel">
-            <i class="bi bi-pencil-square me-2"></i>แก้ไขสินค้า
-          </h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-            (click)="closeEditModal()"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="productForm">
-            <div class="mb-3">
-              <label for="editName" class="form-label">ชื่อสินค้า</label>
-              <input
-                type="text"
-                class="form-control"
-                id="editName"
-                formControlName="name"
-              />
-              <div
-                class="invalid-feedback"
-                [class.d-block]="hasError('name', 'required')"
-              >
-                กรุณากรอกชื่อสินค้า
-              </div>
-              <div
-                class="invalid-feedback"
-                [class.d-block]="hasError('name', 'minlength')"
-              >
-                ชื่อสินค้าต้องมีอย่างน้อย 2 ตัวอักษร
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="editCategory" class="form-label">ประเภทสินค้า</label>
-              <input
-                type="text"
-                class="form-control"
-                id="editCategory"
-                formControlName="category"
-              />
-              <div
-                class="invalid-feedback"
-                [class.d-block]="hasError('category', 'required')"
-              >
-                กรุณากรอกประเภทสินค้า
-              </div>
-              <div
-                class="invalid-feedback"
-                [class.d-block]="hasError('category', 'minlength')"
-              >
-                ประเภทสินค้าต้องมีอย่างน้อย 2 ตัวอักษร
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="editQuantity" class="form-label">จำนวนสินค้า</label>
-              <div class="input-group">
-                <button
-                  class="btn btn-outline-secondary"
-                  type="button"
-                  (click)="
-                    productForm.patchValue({
-                      quantity: (productForm.get('quantity')?.value || 0) - 1
-                    })
-                  "
-                  [disabled]="(productForm.get('quantity')?.value || 0) <= 1"
-                >
-                  <i class="bi bi-dash"></i>
-                </button>
-                <input
-                  type="number"
-                  class="form-control text-center"
-                  id="editQuantity"
-                  formControlName="quantity"
-                  min="1"
-                />
-                <button
-                  class="btn btn-outline-secondary"
-                  type="button"
-                  (click)="
-                    productForm.patchValue({
-                      quantity: (productForm.get('quantity')?.value || 0) + 1
-                    })
-                  "
-                >
-                  <i class="bi bi-plus"></i>
-                </button>
-              </div>
-              <div
-                class="invalid-feedback"
-                [class.d-block]="hasError('quantity', 'required')"
-              >
-                กรุณากรอกจำนวนสินค้า
-              </div>
-              <div
-                class="invalid-feedback"
-                [class.d-block]="hasError('quantity', 'min')"
-              >
-                จำนวนสินค้าต้องมากกว่า 0
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-            (click)="closeEditModal()"
-          >
-            <i class="bi bi-x-circle me-2"></i>ยกเลิก
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            (click)="saveEdit()"
-            [disabled]="productForm.invalid"
-          >
-            <i class="bi bi-check-circle me-2"></i>บันทึกการแก้ไข
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </div>
