@@ -17,7 +17,7 @@ import { Modal } from 'bootstrap';
   ]
 })
 export class AppComponent {
-  title = 'Angular-Project';
+  title = 'อารีญาคงคลัง';
   private logoutModal?: Modal;
   isMenuOpen = false;
 
