@@ -19,8 +19,13 @@ import { Modal } from 'bootstrap';
 export class AppComponent {
   title = 'Angular-Project';
   private logoutModal?: Modal;
+  isMenuOpen = false;
 
   constructor(public authService: AuthService) {}
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
 
   openLogoutModal() {
     const modalEl = document.getElementById('logoutModal');
