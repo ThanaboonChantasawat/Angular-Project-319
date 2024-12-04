@@ -1,30 +1,30 @@
 // src/app/auth/auth.service.ts
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
-  isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+  private loggedIn = false;
+
+  constructor(private router: Router) {}
 
   login(username: string, password: string): boolean {
-    // Demo login - ในงานจริงควรต่อกับ API
-    if (username === 'admin' && password === 'admin123') {
-      this.isAuthenticatedSubject.next(true);
-      localStorage.setItem('isLoggedIn', 'true');
-      return true;
-    }
-    return false;
+    // Logic to authenticate user
+    // If successful:
+    this.loggedIn = true;
+    return true;
+    // Else:
+    // return false;
   }
 
   logout() {
-    this.isAuthenticatedSubject.next(false);
-    localStorage.removeItem('isLoggedIn');
+    this.loggedIn = false;
+    this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return localStorage.getItem('isLoggedIn') === 'true';
+    return this.loggedIn;
   }
 }

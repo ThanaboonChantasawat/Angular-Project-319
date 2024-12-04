@@ -48,20 +48,20 @@
   <router-outlet></router-outlet>
 </div>
 
-<!-- Logout Confirmation Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="logoutModalLabel">ยืนยันการออกจากระบบ</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeLogoutModal()"></button>
       </div>
       <div class="modal-body">
-        คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?
+        คุณต้องการออ���จากระบบใช่หรือไม่?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeLogoutModal()">ยกเลิก</button>
-        <button type="button" class="btn btn-primary" (click)="confirmLogout()">ออกจากระบบ</button>
+        <button type="button" class="btn btn-secondary" (click)="closeLogoutModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="confirmLogout()">ยืนยัน</button>
       </div>
     </div>
   </div>

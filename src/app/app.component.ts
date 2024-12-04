@@ -1,49 +1,48 @@
 import { Component } from '@angular/core';
-import * as bootstrap from 'bootstrap';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { CustomPipe } from './custom.pipe';
 import { AuthService } from './auth/auth.service';
-import { Router } from '@angular/router';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterModule, CustomPipe, CommonModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    CustomPipe
+  ]
 })
 export class AppComponent {
-  title = 'ระบบจัดการสินค้า';
+  title = 'Angular-Project';
+  private logoutModal?: Modal;
 
-  constructor(
-    public authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(public authService: AuthService) {}
 
   openLogoutModal() {
-    const modalElement = document.getElementById('logoutModal');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
+    const modalEl = document.getElementById('logoutModal');
+    if (modalEl) {
+      this.logoutModal = new Modal(modalEl, {
+        backdrop: 'static',
+        keyboard: false
+      });
+      this.logoutModal.show();
     }
   }
 
   closeLogoutModal() {
-    const modalElement = document.getElementById('logoutModal');
-    if (modalElement) {
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      modal?.hide();
-    }
+    this.logoutModal?.hide();
   }
 
   confirmLogout() {
+    this.authService.logout();
     this.closeLogoutModal();
-    this.logout();
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  ngOnDestroy() {
+    this.logoutModal?.dispose();
   }
 }

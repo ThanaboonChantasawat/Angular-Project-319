@@ -6,3 +6,4 @@ describe('CustomPipe', () => {
     expect(pipe).toBeTruthy();
   });
 });
+

@@ -1,12 +1,17 @@
-import { Component } from '@angular/core';
+// src/app/product-management/product-management.component.ts
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms'; // เพิ่ม import
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { CustomPipe } from '../custom.pipe';
 import * as bootstrap from 'bootstrap';
 import { Chart } from 'chart.js/auto';
+import { ProductService } from '../services/product.service';
+import { ErpIntegrationService } from '../services/erp-integration.service';
 
 export interface Product {
+  _id?: string;
   name: string;
   category: string;
   quantity: number;
@@ -21,13 +26,13 @@ export interface Product {
   imports: [
     CommonModule, 
     ReactiveFormsModule,
-    FormsModule, // เพิ่ม FormsModule
+    FormsModule,
     CustomPipe
   ],
   templateUrl: './product-management.component.html',
   styleUrls: ['./product-management.component.css']
 })
-export class ProductManagementComponent {
+export class ProductManagementComponent implements OnInit {
   productForm: FormGroup;
   products: Product[] = [];
   showSuccessAlert = false;
@@ -42,7 +47,11 @@ export class ProductManagementComponent {
   sortDirection: 'asc' | 'desc' = 'asc';
   sortField: string = 'name';
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private productService: ProductService,
+    private erpIntegrationService: ErpIntegrationService
+  ) {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       category: ['', [Validators.required, Validators.minLength(2)]],
@@ -50,19 +59,85 @@ export class ProductManagementComponent {
     });
   }
 
+  ngOnInit() {
+    this.loadProducts();
+  }
+
+  loadProducts() {
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        this.products = products;
+        this.updateCategories();
+        this.initChart();
+      },
+      error: (error) => console.error('Error loading products:', error)
+    });
+  }
+
   addProduct() {
     if (this.productForm.valid) {
-      if (this.editIndex !== null) {
-        this.products[this.editIndex] = this.productForm.value;
-        this.showAlert('แก้ไขสินค้าสำเร็จ');
-        this.editIndex = null;
-      } else {
-        this.products.push(this.productForm.value);
-        this.showAlert('เพิ่มสินค้าสำเร็จ');
-      }
-      this.productForm.reset({quantity: 1});
-      this.updateCategories();
+      const newProduct = this.productForm.value;
+      this.productService.addProduct(newProduct).subscribe({
+        next: (product) => {
+          this.products.push(product);
+          this.showAlert('เพิ่มสินค้าสำเร็จ');
+          this.productForm.reset({quantity: 1});
+          this.updateCategories();
+          this.initChart();
+          this.erpIntegrationService.syncProductData(product).subscribe();
+        },
+        error: (error) => {
+          console.error('Error adding product:', error);
+          this.showAlert('เกิดข้อผิดพลาดในการเพิ่มสินค้า', 'danger');
+        }
+      });
     }
+  }
+
+  saveEdit() {
+    if (this.productForm.valid && this.editIndex !== null) {
+      const product = this.products[this.editIndex];
+      this.productService.updateProduct(product._id!, this.productForm.value).subscribe({
+        next: (updatedProduct) => {
+          this.products[this.editIndex!] = updatedProduct;
+          this.showAlert('แก้ไขสินค้าส���เร็จ');
+          this.closeEditModal();
+          this.editIndex = null;
+          this.updateCategories();
+          this.initChart();
+          this.erpIntegrationService.syncProductData(updatedProduct).subscribe();
+        },
+        error: (error) => console.error('Error updating product:', error)
+      });
+    }
+  }
+
+  deleteProduct(index: number) {
+    const product = this.products[index];
+    this.productService.deleteProduct(product._id!).subscribe({
+      next: () => {
+        this.products.splice(index, 1);
+        this.showAlert('ลบสินค้าสำเร็จ');
+        this.updateCategories();
+        this.initChart();
+        this.erpIntegrationService.syncProductData({ _id: product._id, action: 'delete' }).subscribe();
+      },
+      error: (error) => console.error('Error deleting product:', error)
+    });
+  }
+
+  updateQuantity(index: number, value: number) {
+    const product = this.products[index];
+    product.quantity += value;
+    this.productService.updateProduct(product._id!, product).subscribe({
+      next: (updatedProduct) => {
+        this.products[index] = updatedProduct;
+        this.updateCategories();
+        this.initChart();
+        this.erpIntegrationService.syncProductData(updatedProduct).subscribe();
+      },
+      error: (error) => console.error('Error updating quantity:', error)
+    });
   }
 
   editProduct(index: number) {
@@ -73,37 +148,10 @@ export class ProductManagementComponent {
       category: product.category,
       quantity: product.quantity
     });
-    
     const modalElement = document.getElementById('editProductModal');
     if (modalElement) {
       this.editModal = new bootstrap.Modal(modalElement);
       this.editModal.show();
-    }
-  }
-
-  saveEdit() {
-    if (this.productForm.valid && this.editIndex !== null) {
-      this.products[this.editIndex] = this.productForm.value;
-      this.showAlert('แก้ไขสินค้าสำเร็จ');
-      this.closeEditModal();
-      this.editIndex = null;
-      this.productForm.reset({quantity: 1});
-      this.updateCategories();
-    }
-  }
-
-  closeEditModal() {
-    this.editModal?.hide();
-    this.editIndex = null;
-    this.productForm.reset({quantity: 1});
-  }
-
-  updateQuantity(index: number, value: number) {
-    const newQuantity = this.products[index].quantity + value;
-    if (newQuantity >= 0) {
-      this.products[index].quantity = newQuantity;
-      this.showAlert(value > 0 ? 'เพิ่มจำนวนสำเร็จ' : 'ลดจำนวนสำเร็จ');
-      this.updateProductStatus(this.products[index]);
     }
   }
 
@@ -113,22 +161,16 @@ export class ProductManagementComponent {
     }
   }
 
-  deleteProduct(index: number) {
-    this.products.splice(index, 1);
-    this.showAlert('ลบสินค้าสำเร็จ');
-    this.updateCategories();
+  closeEditModal() {
+    this.editModal?.hide();
+    this.editIndex = null;
+    this.productForm.reset({quantity: 1});
   }
 
-  getTotalQuantity(): number {
-    return this.products.reduce((total, product) => total + product.quantity, 0);
-  }
-
-  private showAlert(message: string) {
+  private showAlert(message: string, type: string = 'success') {
     this.successMessage = message;
     this.showSuccessAlert = true;
-    setTimeout(() => {
-      this.showSuccessAlert = false;
-    }, 3000);
+    setTimeout(() => this.showSuccessAlert = false, 3000);
   }
 
   hasError(controlName: string, errorType: string): boolean {
@@ -136,41 +178,12 @@ export class ProductManagementComponent {
     return control?.errors?.[errorType] && control.touched;
   }
 
-  // Filter products
-  get filteredProducts() {
-    return this.products.filter(product => {
-      const matchSearch = !this.searchTerm || 
-        product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchCategory = !this.selectedCategory || 
-        product.category === this.selectedCategory;
-      return matchSearch && matchCategory;
-    });
-  }
-
-  // Get unique categories
   updateCategories() {
     this.categories = [...new Set(this.products.map(p => p.category))];
   }
 
-  // Get low stock products
   getLowStockProducts() {
     return this.products.filter(p => p.quantity <= (p.minQuantity || 5));
-  }
-
-  // Sort products
-
-  get sortedProducts() {
-    return [...this.products].sort((a, b) => {
-      const multiplier = this.sortDirection === 'asc' ? 1 : -1;
-      
-      if (this.sortField === 'name') {
-        return multiplier * a.name.localeCompare(b.name);
-      } else if (this.sortField === 'quantity') {
-        return multiplier * (a.quantity - b.quantity);
-      }
-      return 0;
-    });
   }
 
   sortProducts(field: string) {
@@ -182,7 +195,18 @@ export class ProductManagementComponent {
     }
   }
 
-  // Initialize chart
+  get sortedProducts() {
+    return [...this.products].sort((a, b) => {
+      const multiplier = this.sortDirection === 'asc' ? 1 : -1;
+      if (this.sortField === 'name') {
+        return multiplier * a.name.localeCompare(b.name);
+      } else if (this.sortField === 'quantity') {
+        return multiplier * (a.quantity - b.quantity);
+      }
+      return 0;
+    });
+  }
+
   initChart() {
     const ctx = document.getElementById('productChart') as HTMLCanvasElement;
     this.chartInstance = new Chart(ctx, {
@@ -210,15 +234,7 @@ export class ProductManagementComponent {
     });
   }
 
-  // Update product status
-  updateProductStatus(product: Product) {
-    if (product.quantity === 0) {
-      product.status = 'out_of_stock';
-    } else if (product.quantity <= (product.minQuantity || 5)) {
-      product.status = 'low_stock';
-    } else {
-      product.status = 'in_stock';
-    }
-    product.lastUpdated = new Date();
+  getTotalQuantity(): number {
+    return this.products.reduce((total, product) => total + product.quantity, 0);
   }
 }
