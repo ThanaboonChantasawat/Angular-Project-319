@@ -7,7 +7,7 @@
     <button class="navbar-toggler" type="button" (click)="toggleMenu()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" [ngClass]="{'show': isMenuOpen}">
+    <div class="collapse navbar-collapse" [ngClass]="{'show': isMenuOpen}" id="navbarNav">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
           <a class="nav-link" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">

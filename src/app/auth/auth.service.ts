@@ -6,25 +6,23 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
-  private loggedIn = false;
-
   constructor(private router: Router) {}
 
   login(username: string, password: string): boolean {
     // Logic to authenticate user
     // If successful:
-    this.loggedIn = true;
+    localStorage.setItem('loggedIn', 'true');
     return true;
     // Else:
     // return false;
   }
 
   logout() {
-    this.loggedIn = false;
+    localStorage.removeItem('loggedIn');
     this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return this.loggedIn;
+    return localStorage.getItem('loggedIn') === 'true';
   }
 }
