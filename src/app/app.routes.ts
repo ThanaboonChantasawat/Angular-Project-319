@@ -4,16 +4,20 @@ import { AboutComponent } from './about/about.component';
 import { ProductManagementComponent } from './product-management/product-management.component';
 import { LoginComponent } from './login/login.component';
 import { authGuard } from './auth/auth.guard';
+import { RegisterComponent } from './register/register.component';
+import { UserManagementComponent } from './user-management/user-management.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent }, // Set the login component as the default route
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
   { path: 'about', component: AboutComponent, canActivate: [authGuard] },
-  { 
-    path: 'products', 
+  {
+    path: 'products',
     component: ProductManagementComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
+  { path: 'register', component: RegisterComponent },
+  { path: 'usermanage', component: UserManagementComponent },
   { path: 'login', component: LoginComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];
