@@ -229,13 +229,14 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
         return 0;
       }
     });
-  }
+  } //เริ่มแก้จากตรงนี้
 
   filterProducts(products: Product[]): Product[] {
-    if (!this.selectedCategory) {
-      return products;
-    }
-    return products.filter(product => product.category === this.selectedCategory);
+    return products.filter(product => {
+      const matchesCategory = !this.selectedCategory || product.category === this.selectedCategory;
+      const matchesSearchTerm = !this.searchTerm || product.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+      return matchesCategory && matchesSearchTerm;
+    });
   }
 
   get sortedProducts() {
