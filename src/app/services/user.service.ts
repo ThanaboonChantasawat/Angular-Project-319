@@ -1,4 +1,4 @@
-// src/app/user-management/user.service.ts
+// src/app/services/user.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -51,8 +51,8 @@ export class UserService {
     );
   }
 
-  login(username: string, password: string): Observable<{token: string}> {
-    return this.http.post<{token: string}>(`${this.apiUrl}/login`, { username, password }).pipe(
+  login(username: string, password: string): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, { username, password }).pipe(
       catchError(this.handleError)
     );
   }

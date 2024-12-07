@@ -22,10 +22,17 @@ export class LoginComponent {
   ) {}
 
   onSubmit() {
-    if (this.authService.login(this.username, this.password)) {
-      this.router.navigate(['/home']);
-    } else {
-      this.error = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
-    }
+    this.authService.login(this.username, this.password).subscribe(
+      success => {
+        if (success) {
+          this.router.navigate(['/home']);
+        } else {
+          this.error = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+        }
+      },
+      error => {
+        this.error = 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+      }
+    );
   }
 }

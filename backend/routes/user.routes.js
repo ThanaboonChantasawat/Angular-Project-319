@@ -1,8 +1,6 @@
 // backend/routes/user.routes.js
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user.model');
-const bcrypt = require('bcryptjs');
 const userController = require('../controllers/user.controller');
 
 // Get all users (admin only)
@@ -64,6 +62,10 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Register user
 router.post('/register', userController.register);
+
+// Login user
+router.post('/login', userController.login);
 
 module.exports = router;
