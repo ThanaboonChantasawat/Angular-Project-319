@@ -8,7 +8,7 @@ exports.register = async (req, res) => {
     // Check duplicate username
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      return res.status(400).json({ message: 'ชื่อผู้ใช้นี้มีอยู่แล้ว' });
+      return res.status(400).json({ message: 'มีชื่อผู้ใช้นี้ในระบบแล้ว' });
     }
 
     // Create new user
@@ -17,6 +17,6 @@ exports.register = async (req, res) => {
 
     res.status(201).json({ message: 'ลงทะเบียนสำเร็จ' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่' });
   }
 };

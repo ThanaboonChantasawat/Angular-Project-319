@@ -12,10 +12,12 @@ import { UserService } from '../user-management/user.service';
     <div class="container mt-5">
       <div class="row justify-content-center">
         <div class="col-md-6">
-          <div class="card shadow">
-            <div class="card-body">
-              <h3 class="text-center mb-4">สมัครสมาชิก</h3>
-              
+          <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white text-center py-3">
+              <h3 class="mb-0">สมัครสมาชิก</h3>
+            </div>
+            
+            <div class="card-body p-4">
               <div *ngIf="error" class="alert alert-danger alert-dismissible fade show">
                 {{error}}
                 <button type="button" class="btn-close" (click)="error = ''"></button>
@@ -29,40 +31,85 @@ import { UserService } from '../user-management/user.service';
               <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
                 <div class="mb-3">
                   <label class="form-label">ชื่อผู้ใช้</label>
-                  <input type="text" class="form-control" formControlName="username">
-                  <div class="text-danger" *ngIf="showError('username')">
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-person"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control" 
+                           formControlName="username"
+                           [class.is-invalid]="showError('username')"
+                           placeholder="กรอกชื่อผู้ใช้">
+                  </div>
+                  <div class="invalid-feedback" *ngIf="showError('username')">
                     {{getErrorMessage('username')}}
                   </div>
                 </div>
 
                 <div class="mb-3">
                   <label class="form-label">รหัสผ่าน</label>
-                  <input type="password" class="form-control" formControlName="password">
-                  <div class="text-danger" *ngIf="showError('password')">
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-lock"></i>
+                    </span>
+                    <input type="password" 
+                           class="form-control"
+                           formControlName="password"
+                           [class.is-invalid]="showError('password')"
+                           placeholder="กรอกรหัสผ่าน">
+                  </div>
+                  <div class="invalid-feedback" *ngIf="showError('password')">
                     {{getErrorMessage('password')}}
                   </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                   <label class="form-label">ยืนยันรหัสผ่าน</label>
-                  <input type="password" class="form-control" formControlName="confirmPassword">
-                  <div class="text-danger" *ngIf="showError('confirmPassword')">
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-lock-check"></i>
+                    </span>
+                    <input type="password" 
+                           class="form-control"
+                           formControlName="confirmPassword"
+                           [class.is-invalid]="showError('confirmPassword')"
+                           placeholder="ยืนยันรหัสผ่านอีกครั้ง">
+                  </div>
+                  <div class="invalid-feedback" *ngIf="showError('confirmPassword')">
                     {{getErrorMessage('confirmPassword')}}
                   </div>
                 </div>
 
                 <button type="submit" 
-                        class="btn btn-primary w-100" 
+                        class="btn btn-primary w-100 py-2"
                         [disabled]="registerForm.invalid || isSubmitting">
+                  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
                   {{isSubmitting ? 'กำลังดำเนินการ...' : 'สมัครสมาชิก'}}
                 </button>
               </form>
+            </div>
+
+            <div class="card-footer text-center py-3">
+              <span>มีบัญชีอยู่แล้ว? </span>
+              <a routerLink="/login" class="text-primary text-decoration-none">เข้าสู่ระบบ</a>
             </div>
           </div>
         </div>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .card {
+      border: none;
+      border-radius: 10px;
+    }
+    .card-header {
+      border-radius: 10px 10px 0 0;
+    }
+    .invalid-feedback {
+      display: block;
+    }
+  `]
 })
 export class RegisterComponent {
   registerForm: FormGroup;
@@ -118,14 +165,7 @@ export class RegisterComponent {
           }, 2000);
         },
         error: (err) => {
-          if (err.error?.message === 'ชื่อผู้ใช้นี้มีอยู่แล้ว') {
-            this.error = 'ชื่อผู้ใช้นี้มีในระบบแล้ว กรุณาเลือกชื่อผู้ใช้อื่น';
-          } else {
-            this.error = 'เกิดข้อผิดพลาด กรุณาลองใหม่';
-          }
-          this.isSubmitting = false;
-        },
-        complete: () => {
+          this.error = err.error?.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
           this.isSubmitting = false;
         }
       });
