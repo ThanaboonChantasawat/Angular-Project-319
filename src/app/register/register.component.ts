@@ -88,11 +88,6 @@ import { UserService } from '../user-management/user.service';
                 </button>
               </form>
             </div>
-
-            <div class="card-footer text-center py-3">
-              <span>มีบัญชีอยู่แล้ว? </span>
-              <a routerLink="/login" class="text-primary text-decoration-none">เข้าสู่ระบบ</a>
-            </div>
           </div>
         </div>
       </div>
@@ -153,16 +148,14 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.isSubmitting = true;
       this.error = '';
-      this.success = '';
 
       const { username, password } = this.registerForm.value;
 
       this.userService.register({ username, password }).subscribe({
         next: () => {
           this.success = 'ลงทะเบียนสำเร็จ';
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
+          this.registerForm.reset();
+          this.isSubmitting = false;
         },
         error: (err) => {
           this.error = err.error?.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
