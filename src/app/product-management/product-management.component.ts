@@ -231,9 +231,16 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  filterProducts(products: Product[]): Product[] {
+    if (!this.selectedCategory) {
+      return products;
+    }
+    return products.filter(product => product.category === this.selectedCategory);
+  }
 
   get sortedProducts() {
-    return [...this.products].sort((a, b) => {
+    const filteredProducts = this.filterProducts(this.products);
+    return [...filteredProducts].sort((a, b) => {
       const multiplier = this.sortDirection === 'asc' ? 1 : -1;
       if (this.sortField === 'name') {
         return multiplier * a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
