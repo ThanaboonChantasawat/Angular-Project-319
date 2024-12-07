@@ -5,7 +5,6 @@ import { ProductManagementComponent } from './product-management/product-managem
 import { LoginComponent } from './login/login.component';
 import { authGuard } from './auth/auth.guard';
 import { RegisterComponent } from './register/register.component';
-import { UserManagementComponent } from './user-management/user-management.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent }, // Set the login component as the default route
@@ -17,7 +16,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   { path: 'register', component: RegisterComponent },
-  { path: 'usermanage', component: UserManagementComponent },
   { path: 'login', component: LoginComponent },
   { path: '**', redirectTo: '' },
 ];
