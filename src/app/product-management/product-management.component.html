@@ -142,34 +142,20 @@
         <button class="btn btn-outline-primary" (click)="sortProducts('name')">
           <i
             class="bi"
-            [class.bi-sort-alpha-down]="
-              sortField === 'name' && sortDirection === 'asc'
-            "
-            [class.bi-sort-alpha-up]="
-              sortField === 'name' && sortDirection === 'desc'
-            "
-          >
-          </i>
+            [class.bi-sort-alpha-down]="sortField === 'name' && sortDirection === 'asc'"
+            [class.bi-sort-alpha-up]="sortField === 'name' && sortDirection === 'desc'"
+          ></i>
           เรียงตามชื่อ
         </button>
-        <button
-          class="btn btn-outline-primary"
-          (click)="sortProducts('quantity')"
-        >
+        <button class="btn btn-outline-primary" (click)="sortProducts('quantity')">
           <i
             class="bi"
-            [class.bi-sort-numeric-down]="
-              sortField === 'quantity' && sortDirection === 'asc'
-            "
-            [class.bi-sort-numeric-up]="
-              sortField === 'quantity' && sortDirection === 'desc'
-            "
-          >
-          </i>
+            [class.bi-sort-numeric-down]="sortField === 'quantity' && sortDirection === 'asc'"
+            [class.bi-sort-numeric-up]="sortField === 'quantity' && sortDirection === 'desc'"
+          ></i>
           เรียงตามจำนวน
         </button>
       </div>
-    </div>
   </div>
 
   <!-- Statistics Dashboard -->
@@ -220,7 +206,7 @@
 <div class="card shadow-sm">
   <div class="card-body">
     <div class="table-responsive">
-      <table class="table table-hover mb-0" *ngIf="products.length > 0">
+      <table class="table table-hover mb-0" *ngIf="sortedProducts.length > 0">
         <thead class="table-light">
           <tr>
             <th>ชื่อสินค้า</th>
@@ -230,7 +216,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let product of products; let i = index"
+          <tr *ngFor="let product of sortedProducts; let i = index"
               [class.table-warning]="product.quantity <= 5 && product.quantity > 0"
               [class.table-danger]="product.quantity === 0">
             <td>{{ product.name | custom }}</td>
