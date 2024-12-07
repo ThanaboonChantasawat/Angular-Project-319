@@ -67,7 +67,7 @@ import { UserService } from '../user-management/user.service';
                   <label class="form-label">ยืนยันรหัสผ่าน</label>
                   <div class="input-group">
                     <span class="input-group-text">
-                      <i class="bi bi-lock-check"></i>
+                      <i class="bi bi-check"></i>
                     </span>
                     <input type="password" 
                            class="form-control"
