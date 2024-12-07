@@ -34,7 +34,7 @@ export interface Product {
 })
 export class ProductManagementComponent implements OnInit, OnDestroy {
   productForm: FormGroup;
-  products: Product[] = [];
+  products: any[] = [];
   showSuccessAlert = false;
   successMessage = '';
   editIndex: number | null = null;
@@ -44,8 +44,8 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   categories: string[] = [];
   chartInstance: Chart | null = null; // Update type definition
   sortOption: string = 'name';
-  sortDirection: 'asc' | 'desc' = 'asc';
   sortField: string = 'name';
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(
     private fb: FormBuilder,
@@ -211,13 +211,32 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
       this.sortField = field;
       this.sortDirection = 'asc';
     }
+
+    this.products.sort((a, b) => {
+      let valueA = a[field];
+      let valueB = b[field];
+
+      if (field === 'name') {
+        valueA = valueA.toLowerCase();
+        valueB = valueB.toLowerCase();
+      }
+
+      if (valueA < valueB) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      } else if (valueA > valueB) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      } else {
+        return 0;
+      }
+    });
   }
+
 
   get sortedProducts() {
     return [...this.products].sort((a, b) => {
       const multiplier = this.sortDirection === 'asc' ? 1 : -1;
       if (this.sortField === 'name') {
-        return multiplier * a.name.localeCompare(b.name);
+        return multiplier * a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       } else if (this.sortField === 'quantity') {
         return multiplier * (a.quantity - b.quantity);
       }
