@@ -1,0 +1,197 @@
+<div class="container">
+    <h1 class="text-center mb-4">จัดการพนักงาน</h1>
+  
+    <!-- Form Section -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h3 class="card-title">เพิ่มพนักงาน</h3>
+        <form [formGroup]="employeeForm" (ngSubmit)="addEmployee()" class="mt-3">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="firstName" formControlName="firstName" placeholder="ชื่อจริง" />
+                <label for="firstName">ชื่อจริง</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="lastName" formControlName="lastName" placeholder="นามสกุล" />
+                <label for="lastName">นามสกุล</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="position" formControlName="position" placeholder="ตำแหน่ง" />
+                <label for="position">ตำแหน่ง</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="phone" formControlName="phone" placeholder="เบอร์โทรติดต่อ" />
+                <label for="phone">เบอร์โทรติดต่อ</label>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-3">
+            <button class="btn btn-primary px-4" type="submit" [disabled]="employeeForm.invalid">
+              <i class="bi bi-plus-circle me-2"></i>เพิ่มพนักงาน
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  
+    <!-- Search & Sort Section -->
+    <div class="row mb-4">
+      <!-- Search -->
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="searchTerm"
+            placeholder="ค้นหาพนักงาน..."
+          />
+        </div>
+      </div>
+  
+      <!-- Sort -->
+      <div class="col-md-6">
+        <div class="btn-group w-100">
+          <button class="btn btn-outline-primary" (click)="sortEmployees('firstName')">
+            <i
+              class="bi"
+              [class.bi-sort-alpha-down]="sortField === 'firstName' && sortDirection === 'asc'"
+              [class.bi-sort-alpha-up]="sortField === 'firstName' && sortDirection === 'desc'"
+            ></i>
+            เรียงตามชื่อ
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Employee Table -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h3 class="card-title">รายชื่อพนักงาน</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ชื่อจริง</th>
+              <th>นามสกุล</th>
+              <th>ตำแหน่ง</th>
+              <th>เบอร์โทรติดต่อ</th>
+              <th>สถานะ</th>
+              <th>การจัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let employee of sortedEmployees; let i = index">
+              <td>{{ employee.firstName }}</td>
+              <td>{{ employee.lastName }}</td>
+              <td>{{ employee.position }}</td>
+              <td>{{ employee.phone }}</td>
+              <td>
+                <button class="btn" [ngClass]="employee.status ? 'btn-success' : 'btn-danger'" (click)="toggleStatus(i)">
+                  {{ employee.status ? 'ว่าง' : 'ไม่ว่าง' }}
+                </button>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button class="btn btn-primary btn-sm" (click)="editEmployee(i)" title="แก้ไขพนักงาน">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="confirmDelete(i)" title="ลบพนักงาน">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Edit Employee Modal -->
+  <div
+    class="modal fade"
+    id="editEmployeeModal"
+    tabindex="-1"
+    aria-labelledby="editEmployeeModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editEmployeeModalLabel">
+            <i class="bi bi-pencil-square me-2"></i>แก้ไขพนักงาน
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="employeeForm">
+            <div class="mb-3">
+              <label for="editFirstName" class="form-label">ชื่อจริง</label>
+              <input
+                type="text"
+                class="form-control"
+                id="editFirstName"
+                formControlName="firstName"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="editLastName" class="form-label">นามสกุล</label>
+              <input
+                type="text"
+                class="form-control"
+                id="editLastName"
+                formControlName="lastName"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="editPosition" class="form-label">ตำแหน่ง</label>
+              <input
+                type="text"
+                class="form-control"
+                id="editPosition"
+                formControlName="position"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="editPhone" class="form-label">เบอร์โทรติดต่อ</label>
+              <input
+                type="text"
+                class="form-control"
+                id="editPhone"
+                formControlName="phone"
+              />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            <i class="bi bi-x-circle me-2"></i>ยกเลิก
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="saveEdit()"
+            [disabled]="employeeForm.invalid"
+          >
+            <i class="bi bi-check-circle me-2"></i>บันทึกการแก้ไข
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
