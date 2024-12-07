@@ -1,8 +1,6 @@
 <!-- app.component.html -->
-<nav
-  class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top"
-  *ngIf="authService.isLoggedIn()"
->
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" *ngIf="shouldShowNavbar()">
   <div class="container">
     <a class="navbar-brand" routerLink="/home">
       <i class="bi bi-box-seam me-2"></i>{{ title | custom }}
@@ -10,19 +8,10 @@
     <button class="navbar-toggler" type="button" (click)="toggleMenu()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div
-      class="collapse navbar-collapse"
-      [ngClass]="{ show: isMenuOpen }"
-      id="navbarNav"
-    >
+    <div class="collapse navbar-collapse" [ngClass]="{'show': isMenuOpen}">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a
-            class="nav-link"
-            routerLink="/home"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
+          <a class="nav-link" routerLink="/home" routerLinkActive="active">
             <i class="bi bi-house-door me-1"></i> หน้าแรก
           </a>
         </li>
@@ -51,46 +40,25 @@
   </div>
 </nav>
 
-<main class="container py-5 mt-4" *ngIf="authService.isLoggedIn()">
-  <router-outlet></router-outlet>
-</main>
-
-<div *ngIf="!authService.isLoggedIn()">
+<!-- Content -->
+<div [ngClass]="{'mt-5 pt-4': shouldShowNavbar()}">
   <router-outlet></router-outlet>
 </div>
 
 <!-- Logout Modal -->
-<div
-  class="modal fade"
-  id="logoutModal"
-  data-bs-backdrop="static"
-  tabindex="-1"
-  aria-labelledby="logoutModalLabel"
-  aria-hidden="true"
->
+<div class="modal fade" id="logoutModal" data-bs-backdrop="static" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="logoutModalLabel">ยืนยันการออกจากระบบ</h5>
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          (click)="closeLogoutModal()"
-        ></button>
+        <h5 class="modal-title">ยืนยันการออกจากระบบ</h5>
+        <button type="button" class="btn-close" (click)="closeLogoutModal()"></button>
       </div>
-      <div class="modal-body">คุณต้องการออกจากระบบใช่หรือไม่?</div>
+      <div class="modal-body">
+        คุณต้องการออกจากระบบใช่หรือไม่?
+      </div>
       <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="closeLogoutModal()"
-        >
-          ยกเลิก
-        </button>
-        <button type="button" class="btn btn-primary" (click)="confirmLogout()">
-          ยืนยัน
-        </button>
+        <button type="button" class="btn btn-secondary" (click)="closeLogoutModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" (click)="confirmLogout()">ยืนยัน</button>
       </div>
     </div>
   </div>

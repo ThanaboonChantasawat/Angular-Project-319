@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CustomPipe } from './custom.pipe';
 import { AuthService } from './auth/auth.service';
 import { Modal } from 'bootstrap';
@@ -21,7 +21,20 @@ export class AppComponent {
   private logoutModal?: Modal;
   isMenuOpen = false;
 
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
+
+  // Check if current route is login or root
+  isLoginPage(): boolean {
+    return this.router.url === '/login' || this.router.url === '/';
+  }
+
+  // Check if navbar should be visible
+  shouldShowNavbar(): boolean {
+    return this.authService.isLoggedIn() && !this.isLoginPage();
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
@@ -31,8 +44,7 @@ export class AppComponent {
     const modalEl = document.getElementById('logoutModal');
     if (modalEl) {
       this.logoutModal = new Modal(modalEl, {
-        backdrop: 'static',
-        keyboard: false
+        backdrop: 'static'
       });
       this.logoutModal.show();
     }
@@ -45,6 +57,7 @@ export class AppComponent {
   confirmLogout() {
     this.authService.logout();
     this.closeLogoutModal();
+    this.router.navigate(['/login']);
   }
 
   ngOnDestroy() {
