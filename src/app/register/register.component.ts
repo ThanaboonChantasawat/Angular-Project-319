@@ -21,6 +21,11 @@ import { UserService } from '../user-management/user.service';
                 <button type="button" class="btn-close" (click)="error = ''"></button>
               </div>
 
+              <div *ngIf="success" class="alert alert-success alert-dismissible fade show">
+                {{success}}
+                <button type="button" class="btn-close" (click)="success = ''"></button>
+              </div>
+
               <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
                 <div class="mb-3">
                   <label class="form-label">ชื่อผู้ใช้</label>
@@ -62,6 +67,7 @@ import { UserService } from '../user-management/user.service';
 export class RegisterComponent {
   registerForm: FormGroup;
   error = '';
+  success = '';
   isSubmitting = false;
 
   constructor(
@@ -99,14 +105,27 @@ export class RegisterComponent {
   onSubmit() {
     if (this.registerForm.valid) {
       this.isSubmitting = true;
+      this.error = '';
+      this.success = '';
+
       const { username, password } = this.registerForm.value;
 
       this.userService.register({ username, password }).subscribe({
         next: () => {
-          this.router.navigate(['/login']);
+          this.success = 'ลงทะเบียนสำเร็จ';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
         },
         error: (err) => {
-          this.error = err.error?.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
+          if (err.error?.message === 'ชื่อผู้ใช้นี้มีอยู่แล้ว') {
+            this.error = 'ชื่อผู้ใช้นี้มีในระบบแล้ว กรุณาเลือกชื่อผู้ใช้อื่น';
+          } else {
+            this.error = 'เกิดข้อผิดพลาด กรุณาลองใหม่';
+          }
+          this.isSubmitting = false;
+        },
+        complete: () => {
           this.isSubmitting = false;
         }
       });

@@ -5,21 +5,17 @@ exports.register = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Check if user exists
+    // Check duplicate username
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: 'ชื่อผู้ใช้นี้มีอยู่แล้ว' });
     }
 
     // Create new user
-    const user = new User({
-      username,
-      password
-    });
-
+    const user = new User({ username, password });
     await user.save();
-    res.status(201).json({ message: 'ลงทะเบียนสำเร็จ' });
 
+    res.status(201).json({ message: 'ลงทะเบียนสำเร็จ' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
