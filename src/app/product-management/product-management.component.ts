@@ -141,25 +141,33 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Update updateQuantity method
   updateQuantity(index: number, value: number) {
-    const product = this.products[index];
+    // Get original index from sorted product
+    const originalIndex = (this.sortedProducts[index] as any & { originalIndex: number }).originalIndex;
+    const product = this.products[originalIndex];
+    
     if (!product._id) return;
 
     const updatedProduct = {
-      ...product,
-      quantity: product.quantity + value
+        ...product,
+        quantity: product.quantity + value
     };
 
     this.productService.updateProduct(product._id, updatedProduct).subscribe({
-      next: (response) => {
-        this.products[index] = response;
-        this.updateCategories();
-        this.initChart();
-      },
-      error: (error) => {
-        console.error('Error updating quantity:', error);
-        this.showAlert('เกิดข้อผิดพลาดในการอัพเดทจำนวนสินค้า');
-      }
+        next: (response) => {
+            // Update using original index
+            this.products[originalIndex] = {
+                ...response,
+                originalIndex // Preserve originalIndex
+            };
+            this.updateCategories();
+            this.initChart();
+        },
+        error: (error) => {
+            console.error('Error updating quantity:', error);
+            this.showAlert('เกิดข้อผิดพลาดในการอัพเดทจำนวนสินค้า');
+        }
     });
   }
 
