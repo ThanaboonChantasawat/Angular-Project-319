@@ -34,7 +34,8 @@ export interface Product {
 })
 export class ProductManagementComponent implements OnInit, OnDestroy {
   productForm: FormGroup;
-  products: any[] = [];
+  // Add originalIndex tracking
+  products: (any & { originalIndex: number })[] = [];
   showSuccessAlert = false;
   successMessage = '';
   editIndex: number | null = null;
@@ -71,8 +72,12 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
 
   loadProducts() {
     this.productService.getProducts().subscribe({
-      next: (products) => {
-        this.products = products;
+      next: (data) => {
+        // Add originalIndex when loading products
+        this.products = data.map((product, index) => ({
+          ...product,
+          originalIndex: index
+        }));
         this.updateCategories();
         this.initChart();
       },
@@ -158,14 +163,18 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Use originalIndex from sorted product
   editProduct(index: number) {
-    this.editIndex = index;
-    const product = this.products[index];
-    this.productForm.setValue({
+    const originalIndex = (this.sortedProducts[index] as any & { originalIndex: number }).originalIndex;
+    this.editIndex = originalIndex;
+    const product = this.products[originalIndex];
+
+    this.productForm.patchValue({
       name: product.name,
-      category: product.category,
+      category: product.category, 
       quantity: product.quantity
     });
+
     const modalElement = document.getElementById('editProductModal');
     if (modalElement) {
       this.editModal = new bootstrap.Modal(modalElement);
@@ -211,25 +220,7 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
       this.sortField = field;
       this.sortDirection = 'asc';
     }
-
-    this.products.sort((a, b) => {
-      let valueA = a[field];
-      let valueB = b[field];
-
-      if (field === 'name') {
-        valueA = valueA.toLowerCase();
-        valueB = valueB.toLowerCase();
-      }
-
-      if (valueA < valueB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (valueA > valueB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  } //เริ่มแก้จากตรงนี้
+  }
 
   filterProducts(products: Product[]): Product[] {
     return products.filter(product => {
