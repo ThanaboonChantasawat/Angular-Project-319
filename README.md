@@ -10,4 +10,5 @@
 วิธี run project
 
 1.กด CTRL+J เปิด terminal และ npm i
+
 2.เขียน ng serve และ เปิดterminal เพิ่มและเขียน cd backend แล้ว npm run dev
