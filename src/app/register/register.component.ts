@@ -14,7 +14,7 @@ import { UserService } from '../user-management/user.service';
         <div class="col-md-6">
           <div class="card shadow-lg">
             <div class="card-header bg-primary text-white text-center py-3">
-              <h3 class="mb-0">สมัครสมาชิก</h3>
+              <h3 class="mb-0">เพิ่มผู้ใช้</h3>
             </div>
             
             <div class="card-body p-4">
@@ -84,7 +84,7 @@ import { UserService } from '../user-management/user.service';
                         class="btn btn-primary w-100 py-2"
                         [disabled]="registerForm.invalid || isSubmitting">
                   <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
-                  {{isSubmitting ? 'กำลังดำเนินการ...' : 'สมัครสมาชิก'}}
+                  {{isSubmitting ? 'กำลังดำเนินการ...' : 'เพิ่มผู้ใช้'}}
                 </button>
               </form>
             </div>
