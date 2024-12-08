@@ -1,5 +1,5 @@
 // src/app/product-management/product-management.component.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -32,14 +32,14 @@ export interface Product {
   templateUrl: './product-management.component.html',
   styleUrls: ['./product-management.component.css']
 })
-export class ProductManagementComponent implements OnInit, OnDestroy {
+export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewInit {
   productForm: FormGroup;
   // Add originalIndex tracking
   products: (any & { originalIndex: number })[] = [];
   showSuccessAlert = false;
   successMessage = '';
   editIndex: number | null = null;
-  editModal: any;
+  private editModal?: any;
   searchTerm: string = '';
   selectedCategory: string = '';
   categories: string[] = [];
@@ -47,6 +47,9 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   sortOption: string = 'name';
   sortField: string = 'name';
   sortDirection: 'asc' | 'desc' = 'asc';
+
+  // Add reference to Modal element
+  @ViewChild('editProductModal') modalElement?: ElementRef;
 
   constructor(
     private fb: FormBuilder,
@@ -62,6 +65,12 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadProducts();
+  }
+
+  ngAfterViewInit() {
+    if (this.modalElement) {
+      this.editModal = new bootstrap.Modal(this.modalElement.nativeElement);
+    }
   }
 
   ngOnDestroy() {
@@ -122,7 +131,10 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
           this.initChart();
           this.erpIntegrationService.syncProductData(updatedProduct).subscribe();
         },
-        error: (error) => console.error('Error updating product:', error)
+        error: (error) => {
+          console.error('Error updating product:', error);
+          this.showAlert('เกิดข้อผิดพลาด: ' + error.message);
+        }
       });
     }
   }
@@ -173,21 +185,19 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
 
   // Use originalIndex from sorted product
   editProduct(index: number) {
-    const originalIndex = (this.sortedProducts[index] as any & { originalIndex: number }).originalIndex;
-    this.editIndex = originalIndex;
-    const product = this.products[originalIndex];
-
+    this.editIndex = index;
+    const product = this.products[index];
+    
+    // Reset form and patch with product values
+    this.productForm.reset();
     this.productForm.patchValue({
       name: product.name,
       category: product.category, 
       quantity: product.quantity
     });
 
-    const modalElement = document.getElementById('editProductModal');
-    if (modalElement) {
-      this.editModal = new bootstrap.Modal(modalElement);
-      this.editModal.show();
-    }
+    // Show modal using Bootstrap modal instance
+    this.editModal?.show();
   }
 
   confirmDelete(index: number) {
