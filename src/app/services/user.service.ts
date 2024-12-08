@@ -27,8 +27,8 @@ export class UserService {
     );
   }
 
-  createAdmin(admin: Pick<User, 'username' | 'password'>): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/admin`, { ...admin, role: 'admin' }).pipe(
+  createUser(user: Pick<User, 'username' | 'password' | 'role'>): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/register`, user).pipe(
       catchError(this.handleError)
     );
   }
@@ -51,21 +51,8 @@ export class UserService {
     );
   }
 
-  login(username: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, { username, password }).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  // Add registration method
-  register(user: Pick<User, 'username' | 'password'>): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/register`, user).pipe(
-      catchError(this.handleError)
-    );
-  }
-
   private handleError(error: HttpErrorResponse) {
     console.error('An error occurred:', error);
-    return throwError(() => new Error('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง'));
+    return throwError(() => new Error('เกิด���้อผิดพลาด กรุณาลองใหม่อีกครั้ง'));
   }
 }

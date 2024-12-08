@@ -193,13 +193,13 @@ export class RegisterComponent {
 
       const { username, password } = this.registerForm.value;
 
-      this.userService.register({ username, password }).subscribe({
+      this.userService.createUser({ username, password, role: 'user' }).subscribe({
         next: () => {
           this.success = 'ลงทะเบียนสำเร็จ';
           this.registerForm.reset();
           this.isSubmitting = false;
         },
-        error: (err) => {
+        error: (err: any) => {
           this.error = err.error?.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
           this.isSubmitting = false;
         },

@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const productRoutes = require('./routes/product.routes');
+const userRoutes = require('./routes/user.routes'); // เพิ่มการ import userRoutes
 const employeeRoutes = require('./routes/employee.routes');
 
 const app = express();
@@ -19,8 +20,8 @@ const startServer = async () => {
     app.use(express.json());
 
     // Routes
-    app.use('/api/v1/products', require('./routes/product.routes'));
-    app.use('/api/v1/users', require('./routes/user.routes'));
+    app.use('/api/v1/products', productRoutes);
+    app.use('/api/v1/users', userRoutes); // เพิ่มการใช้งาน userRoutes
     app.use('/api/v1/employees', employeeRoutes);
 
     const PORT = process.env.PORT || 5000;

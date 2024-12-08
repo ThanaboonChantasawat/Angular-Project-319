@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
 
     // Check duplicate username
     const existingUser = await User.findOne({ username });
@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     }
 
     // Create new user
-    const user = new User({ username, password });
+    const user = new User({ username, password, role });
     await user.save();
 
     res.status(201).json({ message: 'ลงทะเบียนสำเร็จ' });
@@ -45,5 +45,58 @@ exports.login = async (req, res) => {
     res.json({ token });
   } catch (err) {
     res.status(500).json({ message: 'เกิดข้อผิดพลาด กรุณาลองใหม่' });
+  }
+};
+
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password'); // ไม่ส่งคืนรหัสผ่าน
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'ไม่พบผู้ใช้' });
+    }
+
+    Object.assign(user, req.body);
+    const updatedUser = await user.save();
+    res.json(updatedUser);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'ไม่พบผู้ใช้' });
+    }
+
+    user.password = req.body.password;
+    await user.save();
+    res.json({ message: 'อัพเดทรหัสผ่านสำเร็จ' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'ไม่พบผู้ใช้' });
+    }
+
+    await user.deleteOne();
+    res.json({ message: 'ลบผู้ใช้สำเร็จ' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

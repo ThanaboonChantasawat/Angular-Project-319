@@ -3,8 +3,8 @@ import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { ProductManagementComponent } from './product-management/product-management.component';
 import { LoginComponent } from './login/login.component';
-import { authGuard } from './auth/auth.guard';
 import { RegisterComponent } from './register/register.component';
+import { authGuard } from './auth/auth.guard';
 import { EmployeeComponent } from './employee/employee.component';
 
 export const routes: Routes = [
