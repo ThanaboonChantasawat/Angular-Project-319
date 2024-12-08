@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import * as bootstrap from 'bootstrap';
+import { EmployeeService } from '../services/employee.service';
 
 interface Employee {
+  _id?: string;
   firstName: string;
   lastName: string;
   position: string;
@@ -18,7 +20,7 @@ interface Employee {
   templateUrl: './employee.component.html',
   styleUrls: ['./employee.component.css']
 })
-export class EmployeeComponent {
+export class EmployeeComponent implements OnInit {
   employeeForm: FormGroup;
   employees: Employee[] = [];
   editIndex: number | null = null;
@@ -27,24 +29,37 @@ export class EmployeeComponent {
   sortField: keyof Employee = 'firstName';
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private employeeService: EmployeeService) {
     this.employeeForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       position: ['', Validators.required],
       phone: ['', Validators.required],
-      status: [false]
+      status: [true]
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadEmployees();
+  }
+  
+  loadEmployees(): void {
+    this.employeeService.getEmployees().subscribe(employees => {
+      this.employees = employees;
+    }, error => {
+      console.error('Error loading employees:', error);
     });
   }
 
   addEmployee(): void {
-    if (this.editIndex === null) {
-      this.employees.push(this.employeeForm.value);
-    } else {
-      this.employees[this.editIndex] = this.employeeForm.value;
-      this.editIndex = null;
+    if (this.employeeForm.valid) {
+      this.employeeService.addEmployee(this.employeeForm.value).subscribe(employee => {
+        this.employees.push(employee);
+        this.employeeForm.reset();
+      }, error => {
+        console.error('Error adding employee:', error);
+      });
     }
-    this.employeeForm.reset();
   }
 
   editEmployee(index: number): void {
@@ -66,9 +81,12 @@ export class EmployeeComponent {
 
   saveEdit(): void {
     if (this.employeeForm.valid && this.editIndex !== null) {
-      this.employees[this.editIndex] = this.employeeForm.value;
-      this.editModal?.hide();
-      this.editIndex = null;
+      const employee = this.employees[this.editIndex];
+      this.employeeService.updateEmployee(employee._id!, this.employeeForm.value).subscribe(updatedEmployee => {
+        this.employees[this.editIndex!] = updatedEmployee;
+        this.editModal?.hide();
+        this.editIndex = null;
+      });
     }
   }
 
@@ -80,7 +98,10 @@ export class EmployeeComponent {
   }
 
   deleteEmployee(index: number): void {
-    this.employees.splice(index, 1);
+    const employee = this.employees[index];
+    this.employeeService.deleteEmployee(employee._id!).subscribe(() => {
+      this.employees.splice(index, 1);
+    });
   }
 
   toggleStatus(index: number): void {
