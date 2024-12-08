@@ -34,6 +34,7 @@ export interface Product {
 })
 export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewInit {
   productForm: FormGroup;
+  editProductForm: FormGroup;
   // Add originalIndex tracking
   products: (any & { originalIndex: number })[] = [];
   showSuccessAlert = false;
@@ -57,6 +58,12 @@ export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewI
     private erpIntegrationService: ErpIntegrationService
   ) {
     this.productForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      category: ['', [Validators.required, Validators.minLength(2)]],
+      quantity: [1, [Validators.required, Validators.min(1)]]
+    });
+
+    this.editProductForm = this.fb.group({ // Initialize the new form
       name: ['', [Validators.required, Validators.minLength(2)]],
       category: ['', [Validators.required, Validators.minLength(2)]],
       quantity: [1, [Validators.required, Validators.min(1)]]
@@ -119,9 +126,9 @@ export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   saveEdit() {
-    if (this.productForm.valid && this.editIndex !== null) {
+    if (this.editProductForm.valid && this.editIndex !== null) {
       const product = this.products[this.editIndex];
-      this.productService.updateProduct(product._id!, this.productForm.value).subscribe({
+      this.productService.updateProduct(product._id!, this.editProductForm.value).subscribe({
         next: (updatedProduct) => {
           this.products[this.editIndex!] = updatedProduct;
           this.showAlert('แก้ไขสินค้าสำเร็จ');
@@ -140,10 +147,12 @@ export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   deleteProduct(index: number) {
-    const product = this.products[index];
+    const sortedProduct = this.sortedProducts[index];
+    const originalIndex = this.products.findIndex(p => p._id === sortedProduct._id);
+    const product = this.products[originalIndex];
     this.productService.deleteProduct(product._id!).subscribe({
       next: () => {
-        this.products.splice(index, 1);
+        this.products.splice(originalIndex, 1);
         this.showAlert('ลบสินค้าสำเร็จ');
         this.updateCategories();
         this.initChart();
@@ -153,10 +162,18 @@ export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewI
     });
   }
 
+  confirmDelete(index: number) {
+    const sortedProduct = this.sortedProducts[index];
+    const originalIndex = this.products.findIndex(p => p._id === sortedProduct._id);
+    if (confirm(`คุณแน่ใจหรือไม่ที่จะลบ "${this.products[originalIndex].name}"?`)) {
+      this.deleteProduct(index);
+    }
+  }
+
   // Update updateQuantity method
   updateQuantity(index: number, value: number) {
-    // Get original index from sorted product
-    const originalIndex = (this.sortedProducts[index] as any & { originalIndex: number }).originalIndex;
+    const sortedProduct = this.sortedProducts[index];
+    const originalIndex = this.products.findIndex(p => p._id === sortedProduct._id);
     const product = this.products[originalIndex];
     
     if (!product._id) return;
@@ -168,7 +185,6 @@ export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewI
 
     this.productService.updateProduct(product._id, updatedProduct).subscribe({
         next: (response) => {
-            // Update using original index
             this.products[originalIndex] = {
                 ...response,
                 originalIndex // Preserve originalIndex
@@ -185,25 +201,21 @@ export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewI
 
   // Use originalIndex from sorted product
   editProduct(index: number) {
-    this.editIndex = index;
-    const product = this.products[index];
+    const sortedProduct = this.sortedProducts[index];
+    const originalIndex = this.products.findIndex(p => p._id === sortedProduct._id);
+    this.editIndex = originalIndex;
+    const product = this.products[originalIndex];
     
-    // Reset form and patch with product values
-    this.productForm.reset();
-    this.productForm.patchValue({
+    // Reset and patch the edit form with product values
+    this.editProductForm.reset();
+    this.editProductForm.patchValue({
       name: product.name,
       category: product.category, 
       quantity: product.quantity
     });
-
+  
     // Show modal using Bootstrap modal instance
     this.editModal?.show();
-  }
-
-  confirmDelete(index: number) {
-    if (confirm(`คุณแน่ใจหรือไม่ที่จะลบ "${this.products[index].name}"?`)) {
-      this.deleteProduct(index);
-    }
   }
 
   closeEditModal() {
