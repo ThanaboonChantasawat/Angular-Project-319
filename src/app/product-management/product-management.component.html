@@ -110,6 +110,51 @@
     </div>
   </div>
 
+  <!-- Statistics Dashboard -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="dashboard-card p-4">
+        <div class="d-flex align-items-center">
+          <div class="dashboard-icon bg-primary text-white">
+            <i class="bi bi-box-seam"></i>
+          </div>
+          <div class="ms-3">
+            <h6 class="mb-1">สินค้าทั้งหมด</h6>
+            <h3 class="mb-0">{{ products.length }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="dashboard-card p-4">
+        <div class="d-flex align-items-center">
+          <div class="dashboard-icon bg-warning text-white">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+          <div class="ms-3">
+            <h6 class="mb-1">สินค้าใกล้หมด</h6>
+            <h3 class="mb-0">{{ getLowStockProducts().length }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="dashboard-card p-4">
+        <div class="d-flex align-items-center">
+          <div class="dashboard-icon bg-success text-white">
+            <i class="bi bi-graph-up"></i>
+          </div>
+          <div class="ms-3">
+            <h6 class="mb-1">มูลค่ารวม</h6>
+            <h3 class="mb-0">{{ getTotalQuantity() }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Add before product table -->
   <div class="row mb-4">
     <!-- Search & Filter -->
@@ -355,4 +400,10 @@
       </div>
     </div>
   </div>
+  <!-- Chart -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <canvas id="productChart"></canvas>
+    </div>
+  </div>  
 </div>

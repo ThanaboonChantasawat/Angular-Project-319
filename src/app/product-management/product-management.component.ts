@@ -310,4 +310,6 @@ export class ProductManagementComponent implements OnInit, OnDestroy, AfterViewI
   getTotalQuantity(): number {
     return this.products.reduce((total, product) => total + product.quantity, 0);
   }
+
+  
 }
