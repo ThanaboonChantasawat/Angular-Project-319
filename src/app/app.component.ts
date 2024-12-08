@@ -26,12 +26,10 @@ export class AppComponent {
     private router: Router
   ) {}
 
-  // Check if current route is login or root
   isLoginPage(): boolean {
     return this.router.url === '/login' || this.router.url === '/';
   }
 
-  // Check if navbar should be visible
   shouldShowNavbar(): boolean {
     return this.authService.isLoggedIn() && !this.isLoginPage();
   }
