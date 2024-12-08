@@ -5,7 +5,7 @@
 
 พิมพ์ cmd และ เพื่อเปิด terminal และ พิมพ์ code .
 
-2.กด CTRL+J เปิด terminal และ พิมพ์ git clone https://github.com/ThanaboonChantasawat/Angular-Project-319/tree/master
+2.กด CTRL+J เปิด terminal และ พิมพ์ git clone https://github.com/ThanaboonChantasawat/Angular-Project-319.git
 
 วิธี run project
 
