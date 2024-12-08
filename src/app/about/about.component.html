@@ -44,41 +44,91 @@
   </div>
 
   <!-- Technology Stack -->
-  <div class="card border-0 shadow-sm mb-5">
-    <div class="card-body p-5">
-      <h2 class="text-center mb-5">เทคโนโลยีที่ใช้</h2>
-      <div class="row g-4 justify-content-center text-center">
-        <div class="col-6 col-md-3">
-          <div class="tech-icon angular mb-3">
-            <img src="/assets/images/Angular.png" alt="Angular Logo" class="tech-logo">
-          </div>
-          <h5>Angular 19+</h5>
-          <p class="text-muted small">Framework</p>
+<div class="card border-0 shadow-sm mb-5">
+  <div class="card-body p-5">
+    <h2 class="text-center mb-5">เทคโนโลยีที่ใช้</h2>
+    <div class="row g-4 justify-content-center text-center">
+      <div class="col-6 col-md-3">
+        <div class="tech-icon angular mb-3">
+          <img
+            src="/assets/images/Angular.png"
+            alt="Angular Logo"
+            class="tech-logo"
+          />
         </div>
-        <div class="col-6 col-md-3">
-          <div class="tech-icon mb-3">
-            <i class="bi bi-bootstrap fs-1 text-primary"></i>
-          </div>
-          <h5>Bootstrap 5</h5>
-          <p class="text-muted small">UI Framework</p>
+        <h5>Angular 19+</h5>
+        <p class="text-muted small">Framework</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="tech-icon mb-3">
+          <i class="bi bi-bootstrap fs-1 text-primary"></i>
         </div>
-        <div class="col-6 col-md-3">
-          <div class="tech-icon typescript mb-3">
-            <img src="/assets/images/typescript.png" alt="TypeScript Logo" class="tech-logo">
-          </div>
-          <h5>TypeScript</h5>
-          <p class="text-muted small">Language</p>
+        <h5>Bootstrap 5</h5>
+        <p class="text-muted small">UI Framework</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="tech-icon typescript mb-3">
+          <img
+            src="/assets/images/typescript.png"
+            alt="TypeScript Logo"
+            class="tech-logo"
+          />
         </div>
-        <div class="col-6 col-md-3">
-          <div class="tech-icon mb-3">
-            <i class="bi bi-git fs-1 text-warning"></i>
-          </div>
-          <h5>Git</h5>
-          <p class="text-muted small">Version Control</p>
+        <h5>TypeScript</h5>
+        <p class="text-muted small">Language</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="tech-icon mb-3">
+          <i class="bi bi-git fs-1 text-warning"></i>
         </div>
+        <h5>Git</h5>
+        <p class="text-muted small">Version Control</p>
+      </div>
+    </div>
+    <div class="row g-4 justify-content-center text-center">
+      <div class="col-6 col-md-3">
+        <div class="tech-icon nodejs mb-3">
+          <img
+            src="/assets/images/nodejs.png"
+            alt="Node.js Logo"
+            class="tech-logo"
+          />
+        </div>
+        <h5>Node.js</h5>
+        <p class="text-muted small">Runtime</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="tech-icon mb-3">
+          <img
+            src="/assets/images/express.svg"
+            alt="Express.js Logo"
+            class="tech-logo"
+          />
+        </div>
+        <h5>Express.js</h5>
+        <p class="text-muted small">Runtime Framework</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="tech-icon mb-3">
+          <img
+            src="/assets/images/mongodb-icon.svg"
+            alt="MongoDB Logo"
+            class="tech-logo"
+          />
+        </div>
+        <h5>MongoDB</h5>
+        <p class="text-muted small">Database</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="tech-icon mb-3">
+          <i class="bi bi-github fs-1 text-dark"></i>
+        </div>
+        <h5>GitHub</h5>
+        <p class="text-muted small">Repository</p>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Features Details -->
   <div class="row g-4 mb-5">
@@ -92,7 +142,7 @@
               <div>
                 <h6 class="mb-1">ระบบจัดการสินค้า</h6>
                 <p class="text-muted mb-0">
-                  เพิ่ม ลบ แก้ไขข้อมูลสินค้าแบบเรียลไทม์
+                  เพิ่ม ลบ แก้ไขข้อมูลสินค้า อัพเดตสินค้า
                 </p>
               </div>
             </li>
@@ -110,7 +160,16 @@
               <div>
                 <h6 class="mb-1">ระบบค้นหาขั้นสูง</h6>
                 <p class="text-muted mb-0">
-                  ค้นหาและกรองข้อมูลด้วยหลายเงื่อนไข
+                  ค้นหาและกรองข้อมูล
+                </p>
+              </div>
+            </li>
+            <li class="list-group-item d-flex align-items-center px-0">
+              <i class="bi bi-check-circle-fill text-success me-3"></i>
+              <div>
+                <h6 class="mb-1">ระบบจัดการพนักงาน</h6>
+                <p class="text-muted mb-0">
+                  เพิ่มข้อมูล แก้ไข ลบ อัพเดตสถานะ
                 </p>
               </div>
             </li>
@@ -129,7 +188,7 @@
                 <h6 class="mb-0">ผู้พัฒนา</h6>
               </div>
               <p class="text-muted ms-5 mb-0">
-                นักศึกษาชั้นปีที่ 3 Bangkok University <br>
+                นักศึกษาชั้นปีที่ 3 Bangkok University <br />
                 ชัยชนะ เจิดนภาพันธ์ 1650706078 <br />
                 อารีญา ศานติบูรณานนท์ 1650706086 <br />
                 ธนภูมิ ศรีกาญจน์ 1650706284 <br />
@@ -143,7 +202,7 @@
                 <i class="bi bi-calendar-check fs-4 text-primary me-3"></i>
                 <h6 class="mb-0">อัพเดทล่าสุด</h6>
               </div>
-              <p class="text-muted ms-5 mb-0">มีนาคม 2567</p>
+              <p class="text-muted ms-5 mb-0">ธันวาคม 2567</p>
             </li>
             <li>
               <div class="d-flex align-items-center mb-2">
