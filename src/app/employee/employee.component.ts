@@ -21,28 +21,34 @@ interface Employee {
   styleUrls: ['./employee.component.css']
 })
 export class EmployeeComponent implements OnInit {
-  employeeForm: FormGroup;
+  addEmployeeForm: FormGroup;
+  editEmployeeForm: FormGroup;
   employees: Employee[] = [];
-  editIndex: number | null = null;
   editModal: bootstrap.Modal | null = null;
   searchTerm: string = '';
   sortField: keyof Employee = 'firstName';
   sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(private fb: FormBuilder, private employeeService: EmployeeService) {
-    this.employeeForm = this.fb.group({
+    this.addEmployeeForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       position: ['', Validators.required],
-      phone: ['', Validators.required],
-      status: [true]
+      phone: ['', Validators.required]
+    });
+
+    this.editEmployeeForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      position: ['', Validators.required],
+      phone: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.loadEmployees();
   }
-  
+
   loadEmployees(): void {
     this.employeeService.getEmployees().subscribe(employees => {
       this.employees = employees;
@@ -52,25 +58,22 @@ export class EmployeeComponent implements OnInit {
   }
 
   addEmployee(): void {
-    if (this.employeeForm.valid) {
-      this.employeeService.addEmployee(this.employeeForm.value).subscribe(employee => {
+    if (this.addEmployeeForm.valid) {
+      this.employeeService.addEmployee(this.addEmployeeForm.value).subscribe(employee => {
         this.employees.push(employee);
-        this.employeeForm.reset();
+        this.addEmployeeForm.reset();
       }, error => {
         console.error('Error adding employee:', error);
       });
     }
   }
 
-  editEmployee(index: number): void {
-    this.editIndex = index;
-    const employee = this.employees[index];
-    this.employeeForm.setValue({
+  editEmployee(employee: Employee): void {
+    this.editEmployeeForm.setValue({
       firstName: employee.firstName,
       lastName: employee.lastName,
       position: employee.position,
-      phone: employee.phone,
-      status: employee.status
+      phone: employee.phone
     });
     const modalElement = document.getElementById('editEmployeeModal');
     if (modalElement) {
@@ -80,32 +83,33 @@ export class EmployeeComponent implements OnInit {
   }
 
   saveEdit(): void {
-    if (this.employeeForm.valid && this.editIndex !== null) {
-      const employee = this.employees[this.editIndex];
-      this.employeeService.updateEmployee(employee._id!, this.employeeForm.value).subscribe(updatedEmployee => {
-        this.employees[this.editIndex!] = updatedEmployee;
+    if (this.editEmployeeForm.valid) {
+      const updatedEmployee = { ...this.editEmployeeForm.value, _id: this.editEmployeeForm.value._id };
+      this.employeeService.updateEmployee(updatedEmployee._id!, updatedEmployee).subscribe(() => {
+        const index = this.employees.findIndex(emp => emp._id === updatedEmployee._id);
+        if (index !== -1) {
+          this.employees[index] = updatedEmployee;
+        }
         this.editModal?.hide();
-        this.editIndex = null;
       });
     }
   }
 
-  confirmDelete(index: number): void {
-    const employee = this.employees[index];
+  confirmDelete(employee: Employee): void {
     if (confirm(`คุณแน่ใจหรือไม่ที่จะลบ "${employee.firstName} ${employee.lastName}"?`)) {
-      this.deleteEmployee(index);
+      this.deleteEmployee(employee);
     }
   }
 
-  deleteEmployee(index: number): void {
-    const employee = this.employees[index];
+  deleteEmployee(employee: Employee): void {
     this.employeeService.deleteEmployee(employee._id!).subscribe(() => {
-      this.employees.splice(index, 1);
+      this.employees = this.employees.filter(emp => emp._id !== employee._id);
     });
   }
 
-  toggleStatus(index: number): void {
-    this.employees[index].status = !this.employees[index].status;
+  toggleStatus(employee: Employee): void {
+    employee.status = !employee.status;
+    this.employeeService.updateEmployee(employee._id!, employee).subscribe();
   }
 
   get sortedEmployees(): Employee[] {
@@ -119,6 +123,8 @@ export class EmployeeComponent implements OnInit {
         return multiplier * aValue.localeCompare(bValue, undefined, { sensitivity: 'base' });
       } else if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
         return multiplier * (aValue === bValue ? 0 : aValue ? 1 : -1);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return multiplier * (aValue - bValue);
       } else {
         return 0;
       }
