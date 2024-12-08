@@ -29,6 +29,7 @@ export class EmployeeComponent implements OnInit {
   sortField: keyof Employee = 'firstName';
   sortDirection: 'asc' | 'desc' = 'asc';
   private currentEmployeeId: string | undefined;
+  private currentEmployeeStatus: boolean | undefined; // เพิ่มตัวแปรเก็บสถานะ
 
   constructor(private fb: FormBuilder, private employeeService: EmployeeService) {
     this.addEmployeeForm = this.fb.group({
@@ -70,7 +71,9 @@ export class EmployeeComponent implements OnInit {
   }
 
   editEmployee(employee: Employee): void {
-    this.currentEmployeeId = employee._id; // เก็บ id ไว้
+    this.currentEmployeeId = employee._id;
+    this.currentEmployeeStatus = employee.status; // เก็บสถานะปัจจุบัน
+    
     this.editEmployeeForm.patchValue({
       firstName: employee.firstName,
       lastName: employee.lastName,
@@ -90,24 +93,22 @@ export class EmployeeComponent implements OnInit {
       const updatedEmployee = {
         _id: this.currentEmployeeId,
         ...this.editEmployeeForm.value,
-        status: true // หรือค่าสถานะเดิมของพนักงาน
+        status: this.currentEmployeeStatus // ใช้สถานะเดิม
       };
 
       this.employeeService.updateEmployee(this.currentEmployeeId, updatedEmployee)
         .subscribe({
           next: (response) => {
-            // อัพเดทข้อมูลในตาราง
             const index = this.employees.findIndex(emp => emp._id === this.currentEmployeeId);
             if (index !== -1) {
-              this.employees[index] = { ...this.employees[index], ...updatedEmployee };
+              this.employees[index] = { ...updatedEmployee };
             }
-            // ปิด modal
             if (this.editModal) {
               this.editModal.hide();
             }
-            // รีเซ็ตฟอร์ม
             this.editEmployeeForm.reset();
             this.currentEmployeeId = undefined;
+            this.currentEmployeeStatus = undefined; // รีเซ็ตสถานะ
           },
           error: (error) => {
             console.error('Error updating employee:', error);
