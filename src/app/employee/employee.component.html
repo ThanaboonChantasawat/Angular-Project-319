@@ -115,6 +115,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <!-- ลบ (ngSubmit)="saveEdit()" ออกจาก form -->
           <form [formGroup]="editEmployeeForm">
             <div class="mb-3">
               <label for="editFirstName" class="form-label">ชื่อจริง</label>
@@ -132,6 +133,7 @@
               <label for="editPhone" class="form-label">เบอร์โทรติดต่อ</label>
               <input type="text" class="form-control" id="editPhone" formControlName="phone" />
             </div>
+            <!-- ลบปุ่ม Save ที่ซ้ำซ้อน -->
           </form>
         </div>
         <div class="modal-footer">

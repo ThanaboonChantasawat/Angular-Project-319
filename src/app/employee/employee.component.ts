@@ -28,6 +28,7 @@ export class EmployeeComponent implements OnInit {
   searchTerm: string = '';
   sortField: keyof Employee = 'firstName';
   sortDirection: 'asc' | 'desc' = 'asc';
+  private currentEmployeeId: string | undefined;
 
   constructor(private fb: FormBuilder, private employeeService: EmployeeService) {
     this.addEmployeeForm = this.fb.group({
@@ -69,12 +70,14 @@ export class EmployeeComponent implements OnInit {
   }
 
   editEmployee(employee: Employee): void {
-    this.editEmployeeForm.setValue({
+    this.currentEmployeeId = employee._id; // เก็บ id ไว้
+    this.editEmployeeForm.patchValue({
       firstName: employee.firstName,
       lastName: employee.lastName,
       position: employee.position,
       phone: employee.phone
     });
+    
     const modalElement = document.getElementById('editEmployeeModal');
     if (modalElement) {
       this.editModal = new bootstrap.Modal(modalElement);
@@ -83,15 +86,34 @@ export class EmployeeComponent implements OnInit {
   }
 
   saveEdit(): void {
-    if (this.editEmployeeForm.valid) {
-      const updatedEmployee = { ...this.editEmployeeForm.value, _id: this.editEmployeeForm.value._id };
-      this.employeeService.updateEmployee(updatedEmployee._id!, updatedEmployee).subscribe(() => {
-        const index = this.employees.findIndex(emp => emp._id === updatedEmployee._id);
-        if (index !== -1) {
-          this.employees[index] = updatedEmployee;
-        }
-        this.editModal?.hide();
-      });
+    if (this.editEmployeeForm.valid && this.currentEmployeeId) {
+      const updatedEmployee = {
+        _id: this.currentEmployeeId,
+        ...this.editEmployeeForm.value,
+        status: true // หรือค่าสถานะเดิมของพนักงาน
+      };
+
+      this.employeeService.updateEmployee(this.currentEmployeeId, updatedEmployee)
+        .subscribe({
+          next: (response) => {
+            // อัพเดทข้อมูลในตาราง
+            const index = this.employees.findIndex(emp => emp._id === this.currentEmployeeId);
+            if (index !== -1) {
+              this.employees[index] = { ...this.employees[index], ...updatedEmployee };
+            }
+            // ปิด modal
+            if (this.editModal) {
+              this.editModal.hide();
+            }
+            // รีเซ็ตฟอร์ม
+            this.editEmployeeForm.reset();
+            this.currentEmployeeId = undefined;
+          },
+          error: (error) => {
+            console.error('Error updating employee:', error);
+            alert('เกิดข้อผิดพลาดในการอัพเดทข้อมูล');
+          }
+        });
     }
   }
 
